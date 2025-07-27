@@ -100,7 +100,7 @@ const verificationController = async (req, res) => {
     });
 
     req.flash('success', 'Email verified successfully! Welcome to JobSync.');
-    res.redirect('/dashboard');
+    res.redirect('/');
   } catch (error) {
     console.log('Error verifying the user: ', error);
     req.flash('error', 'Something went wrong during verification!');
@@ -300,7 +300,7 @@ const resendVerificationController = async (req, res) => {
 
     if (user.isVerified) {
       req.flash('info', 'Email is already verified');
-      return res.redirect('/dashboard');
+      return res.redirect('/');
     }
 
     // Generate new verification token

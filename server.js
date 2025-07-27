@@ -70,7 +70,7 @@ app.use((req, res, next) => {
 // ========== RATE LIMITING ==========
 const emailRateLimit = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 100,
+  max: 3,
   message: {
     success: false,
     message: 'Too many email requests from this IP. Please try again in 15 minutes.',
