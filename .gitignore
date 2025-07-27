@@ -33,3 +33,5 @@ build/
 
 # Git merge conflict backups
 *.orig
+
+.prettierrc
