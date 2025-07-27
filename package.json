@@ -23,12 +23,9 @@
   "license": "MIT",
   "dependencies": {
     "bcrypt": "^6.0.0",
-<<<<<<< HEAD
     "connect-flash": "^0.1.1",
-    "cookie-parser": "^1.4.7",
-=======
     "connect-mongo": "^5.1.0",
->>>>>>> 449776eda2ffeaf6e68e12fd1c7407d4a8824409
+    "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
     "ejs": "^3.1.10",
