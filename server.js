@@ -73,7 +73,7 @@ app.set('views', path.join(__dirname, 'views'));
 // Session configuration with MongoStore and flash messages
 app.use(
   session({
-    secret: process.env.SESSION_SECRET || 'thisshouldbeabettersecret',
+    secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
     store: MongoStore.create({
