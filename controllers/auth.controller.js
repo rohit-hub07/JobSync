@@ -109,7 +109,6 @@ const verificationController = async (req, res) => {
 };
 
 const loginController = async (req, res) => {
-
   const { email, password } = req.body;
   try {
     if (!email || !password) {
@@ -251,7 +250,7 @@ const forgetPasswordController = async (req, res) => {
 
 const resetPasswordController = async (req, res) => {
   const { password } = req.body;
-  const { token } = req.params;
+  const { resetKey } = req.params;
   try {
     if (!password) {
       req.flash('error', 'Password is required!');
@@ -259,7 +258,7 @@ const resetPasswordController = async (req, res) => {
     }
 
     const user = await User.findOne({
-      resetPasswordToken: token,
+      resetPasswordToken: resetKey,
       resetPasswordExpiry: { $gt: Date.now() },
     });
 
@@ -351,7 +350,7 @@ const dashboardController = async (req, res) => {
       console.log('No user found in dashboard controller');
       req.flash('error', 'User data not found. Please login again.');
       return res.redirect('/login');
-    }           
+    }
     res.render('dashboard.ejs', { user });
   } catch (error) {
     console.log('Error loading dashboard: ', error);

@@ -35,21 +35,19 @@ authRouter.get('/auth/verify/:token', verificationController);
 authRouter.post('/forgot-password', forgetPasswordController);
 
 // Reset password routes
-authRouter.get('/reset-password/:token', (req, res) => {
-  const { token } = req.params;
-  res.render('reset-password.ejs', { token });
+authRouter.get('/reset-password/:resetKey', (req, res) => {
+  const { resetKey } = req.params;
+  res.render('reset-password.ejs', { resetKey });
 });
 
-authRouter.post('/reset-password/:token', resetPasswordController);
+authRouter.post('/reset-password/:resetKey', resetPasswordController);
 
 // Protected routes (require authentication)
 authRouter.get('/dashboard', authenticateToken, async (req, res) => {
-  res.send("Coming soon!");
+  res.send('Coming soon!');
 });
 authRouter.get('/profile', authenticateToken, profileController);
 authRouter.post('/logout', authenticateToken, logoutController);
 authRouter.post('/resend-verification', authenticateToken, resendVerificationController);
-
-
 
 module.exports = authRouter;
