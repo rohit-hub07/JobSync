@@ -140,6 +140,48 @@
       margin-top: 60px;
     }
 
+    /* Menu user items styling */
+    .user-menu-item {
+      background: var(--color-text-secondary) !important;
+      border: none;
+      transition: all 0.3s ease;
+    }
+
+    .user-menu-item:hover {
+      background: var(--color-text-secondary) !important;
+      transform: translateY(-2px);
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .logout-menu-item {
+      background: var(--color-text-secondary) !important;
+    }
+
+    .logout-menu-item:hover {
+      background: var(--color-text-secondary) !important;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .user-menu-item span {
+      color: var(--color-bg) !important;
+      font-weight: 500;
+    }
+
+    .user-menu-item i {
+      font-size: 0.9em;
+    }
+
+    /* Menu item numbering for better visual hierarchy */
+    .menu-item span:first-child {
+      font-weight: 700;
+      opacity: 0.7;
+      font-size: 0.8em;
+    }
+
+    .menu-item span:last-child {
+      font-weight: 500;
+    }
+
     @keyframes slideIn {
       from {
         transform: translateX(100%);
@@ -162,6 +204,14 @@
         flex-direction: column;
         gap: 0.5rem;
         text-align: center;
+      }
+
+      .user-menu-item {
+        margin: 0.1rem 0;
+      }
+
+      .user-menu-item span {
+        font-size: 0.9rem;
       }
     }
   </style>
@@ -244,26 +294,6 @@
 
         <div class="user-auth">
           <% if (typeof user !=='undefined' && user) { %>
-            <!-- User is logged in -->
-            <div class="user-status">
-              <div>
-                <i class="fa-solid fa-user"></i>
-                <span class="user-name">Welcome, <%= user.name %>!</span>
-                <% if (!user.isVerified) { %>
-                  <span style="color: #ffc107; font-size: 0.8rem;">
-                    <i class="fas fa-exclamation-triangle"></i> Email not verified
-                  </span>
-                  <form action="/resend-verification" method="POST" style="display: inline;">
-                    <button type="submit" class="resend-btn">
-                      <i class="fas fa-paper-plane"></i> Resend
-                    </button>
-                  </form>
-                  <% } else { %>
-                    <span style="color: #28a745; font-size: 0.8rem;">
-                      <i class="fas fa-check-circle"></i> Verified
-                    </span>
-                    <% } %>
-              </div>
               <div style="display: flex; gap: 0.5rem;">
                 <% if (user.isVerified) { %>
                   <a href="/dashboard" class="auth-button" style="padding: 0.5rem 1rem; font-size: 0.9rem;">
@@ -271,16 +301,6 @@
                     Dashboard
                   </a>
                   <% } %>
-                    <a href="/profile" class="auth-button" style="padding: 0.5rem 1rem; font-size: 0.9rem;">
-                      <i class="fa-solid fa-user"></i>&nbsp;&nbsp;
-                      Profile
-                    </a>
-                    <form action="/logout" method="POST" style="display: inline;">
-                      <button type="submit" class="logout-btn">
-                        <i class="fa-solid fa-right-from-bracket"></i>&nbsp;&nbsp;
-                        Logout
-                      </button>
-                    </form>
               </div>
             </div>
             <% } else { %>
@@ -301,12 +321,7 @@
         </div>
 
         <div class="ctas">
-          <div class="contact">
-            <div class="contact-icon">
-              <ion-icon name="ellipse-sharp"></ion-icon>
-            </div>
-            <a href="" target="_blank">Let's talk</a>
-          </div>
+
 
           <div class="menu">
             <div class="menu-icon">
@@ -326,22 +341,34 @@
             <span>01</span>
             <span>Who we are</span>
           </a>
-          <a href="#services" class="menu-item">
-            <span>02</span>
-            <span>Profile</span>
-          </a>
-          <a href="#cases" class="menu-item">
-            <span>03</span>
-            <span>Features</span>
-          </a>
-          <a href="#prices" class="menu-item">
-            <span>04</span>
-            <span>Subscription</span>
-          </a>
-          <a href="#contact" class="menu-item">
-            <span>05</span>
-            <span>Contact</span>
-          </a>
+          <% if (typeof user !=='undefined' && user) { %>
+            <!-- Profile - Only for logged in users -->
+            <a href="/profile" class="menu-item user-menu-item">
+              <span>02</span>
+              <span><i class="fa-solid fa-user"></i>&nbsp;&nbsp;Profile</span>
+            </a>
+            <% } %>
+              <a href="#cases" class="menu-item">
+                <span>
+                  <%= (typeof user !=='undefined' && user) ? '03' : '02' %>
+                </span>
+                <span>Features</span>
+              </a>
+              <a href="#prices" class="menu-item">
+                <span>
+                  <%= (typeof user !=='undefined' && user) ? '04' : '03' %>
+                </span>
+                <span>Subscription</span>
+              </a>
+              <% if (typeof user !=='undefined' && user) { %>
+                <!-- Logout - Only for logged in users -->
+                <form action="/logout" method="post">
+                  <button class="menu-item user-menu-item logout-menu-item">
+                    <span>05</span>
+                    <span><i class="fa-solid fa-right-from-bracket"></i>&nbsp;&nbsp;Logout</span>
+                  </button>
+                </form>
+                <% } %>
         </div>
       </div>
 
