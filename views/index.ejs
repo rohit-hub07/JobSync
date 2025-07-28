@@ -37,6 +37,9 @@
   <script type="module" src="https://unpkg.com/@splinetool/viewer/build/spline-viewer.js"></script>
 
   <style>
+    .cursor{
+      cursor: pointer  !important;
+    }
     .flash-messages {
       position: fixed;
       top: 20px;
@@ -363,7 +366,7 @@
               <% if (typeof user !=='undefined' && user) { %>
                 <!-- Logout - Only for logged in users -->
                 <form action="/logout" method="post">
-                  <button class="menu-item user-menu-item logout-menu-item">
+                  <button class="menu-item cursor user-menu-item logout-menu-item">
                     <span>05</span>
                     <span><i class="fa-solid fa-right-from-bracket"></i>&nbsp;&nbsp;Logout</span>
                   </button>
