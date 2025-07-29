@@ -94,8 +94,8 @@ const verificationController = async (req, res) => {
 
     res.cookie('token', tkn, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
+      secure: true,
+      sameSite: "none",
       maxAge: 24 * 60 * 60 * 1000, // 1 day
     });
 
@@ -140,9 +140,9 @@ const loginController = async (req, res) => {
 
     res.cookie('token', tkn, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
-      maxAge: 24 * 60 * 60 * 1000, // 1 day
+      secure: true,
+      sameSite:"none",
+      maxAge: 24 * 60 * 60 * 1000, 
     });
 
     req.flash('success', `Welcome back, ${user.name}!`);
@@ -158,8 +158,8 @@ const logoutController = async (req, res) => {
   try {
     res.cookie('token', '', {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
+      secure: true,
+      sameSite: "none",
       maxAge: 0,
     });
 
