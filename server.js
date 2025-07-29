@@ -12,6 +12,7 @@ const MongoStore = require('connect-mongo');
 const bcrypt = require('bcrypt');
 const fetch = require('node-fetch');
 const User = require('./models/user.js');
+const Contact = require('./models/contact.js');
 const authRouter = require('./routes/auth.routes.js');
 const { optionalAuth } = require('./middleware/auth.middleware.js');
 
@@ -165,7 +166,7 @@ app.get('/api/totalusers', async (req, res) => {
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST,
   port: process.env.SMTP_PORT,
-  secure: process.env.SMTP_SECURE === 'true',
+  secure: true,
   auth: {
     user: process.env.SMTP_USER,
     pass: process.env.SMTP_PASS,
@@ -190,6 +191,15 @@ app.post('/send-email', emailRateLimit, async (req, res) => {
         .status(400)
         .json({ success: false, message: 'Please enter a valid email address.' });
     }
+
+    // Save to DB
+    await Contact.create({
+      userName: user_name,
+      userRole: user_role,
+      userEmail: user_email,
+      portfolioLink: portfolio_link,
+      message,
+    });
 
     const mailOptions = {
       from: `"${user_name}" <${process.env.EMAIL_USER}>`,
