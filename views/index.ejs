@@ -7,7 +7,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>JobSync</title>
   <meta name="author" content="JobSync" />
-  <meta name="description" content="JobSync – AI-powered job portal for real-time opportunities, mentorship, and smart career insights." />
+  <meta name="description"
+    content="JobSync – AI-powered job portal for real-time opportunities, mentorship, and smart career insights." />
   <meta name="theme-color" content="#000000" />
 
   <!-- Performance Optimizations -->
@@ -53,9 +54,10 @@
   <script type="module" src="https://unpkg.com/@splinetool/viewer/build/spline-viewer.js"></script>
 
   <style>
-    .cursor{
-      cursor: pointer  !important;
+    .cursor {
+      cursor: pointer !important;
     }
+
     .flash-messages {
       position: fixed;
       top: 20px;
@@ -314,42 +316,42 @@
 
         <div class="user-auth">
           <% if (typeof user !=='undefined' && user) { %>
-              <div style="display: flex; gap: 0.5rem;">
-                <% if (user.isVerified) { %>
-                  <a href="/dashboard" class="auth-button" style="padding: 0.5rem 1rem; font-size: 0.9rem;">
-                    <i class="fa-solid fa-tachometer-alt"></i>&nbsp;&nbsp;
-                    Dashboard
-                  </a>
-                  <% } %>
-              </div>
+            <div style="display: flex; gap: 0.5rem;">
+              <% if (user.isVerified) { %>
+                <a href="/dashboard" class="auth-button" style="padding: 0.5rem 1rem; font-size: 0.9rem;">
+                  <i class="fa-solid fa-tachometer-alt"></i>&nbsp;&nbsp;
+                  Dashboard
+                </a>
+                <% } %>
             </div>
-            <% } else { %>
-              <!-- User is not logged in -->
-              <div class="button">
-                <a href="/login" class="auth-button">
-                  <i class="fa-solid fa-right-to-bracket"></i>&nbsp;&nbsp;
-                  Sign In
-                </a>
-              </div>
-              <div class="button">
-                <a href="/signup" class="auth-button">
-                  <i class="fa-solid fa-user-plus"></i>&nbsp;&nbsp;
-                  Sign Up
-                </a>
-              </div>
-              <% } %>
         </div>
-
-        <div class="ctas">
-
-
-          <div class="menu">
-            <div class="menu-icon">
-              <ion-icon name="close-sharp"></ion-icon>
-            </div>
-            <p>Menu</p>
+        <% } else { %>
+          <!-- User is not logged in -->
+          <div class="button">
+            <a href="/login" class="auth-button">
+              <i class="fa-solid fa-right-to-bracket"></i>&nbsp;&nbsp;
+              Sign In
+            </a>
           </div>
-        </div>
+          <div class="button">
+            <a href="/signup" class="auth-button">
+              <i class="fa-solid fa-user-plus"></i>&nbsp;&nbsp;
+              Sign Up
+            </a>
+          </div>
+          <% } %>
+            </div>
+
+            <div class="ctas">
+
+
+              <div class="menu">
+                <div class="menu-icon">
+                  <ion-icon name="close-sharp"></ion-icon>
+                </div>
+                <p>Menu</p>
+              </div>
+            </div>
       </nav>
 
       <!-- menu links -->
