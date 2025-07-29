@@ -45,6 +45,7 @@ const allowedOrigins = [
   'https://jobsync-new.onrender.com',
   'https://jobsyncc.netlify.app',
   'http://localhost:3000',
+  'https://jobsync-zazt.onrender.com',
 ];
 
 // ========== MIDDLEWARE ==========
