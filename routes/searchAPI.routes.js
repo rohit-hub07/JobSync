@@ -225,17 +225,6 @@ router.get('/jobs/external', async (req, res) => {
       page: page,
     });
 
-    const apiKey = process.env.GOOGLE_CLOUD_SEARCH_API;
-    const engineId = process.env.GOOGLE_SEARCH_ENGINE_API;
-
-    if (!apiKey || !engineId) {
-      return res.status(503).json({
-        success: false,
-        error: 'External job search service is currently unavailable',
-        message: 'Google API credentials not configured',
-      });
-    }
-
     // Build search term
     let searchTerm = searchQuery || 'jobs';
     if (location && location.trim()) {
@@ -244,11 +233,11 @@ router.get('/jobs/external', async (req, res) => {
     searchTerm += ' jobs';
 
     const startIndex = ((parseInt(page) || 1) - 1) * parseInt(limit) + 1;
-    const query = encodeURIComponent(searchTerm);
-    const url = `https://www.googleapis.com/customsearch/v1?key=${apiKey}&cx=${engineId}&q=${query}&start=${startIndex}&num=${limit}`;
+    
+    // Use internal proxy instead of direct Google API call
+    const proxyUrl = `http://localhost:${process.env.PORT || 3000}/api/google-search?q=${encodeURIComponent(searchTerm)}&start=${startIndex}&num=${limit}`;
 
-
-    const response = await fetch(url);
+    const response = await fetch(proxyUrl);
 
     if (!response.ok) {
       console.error(`❌ External API Error: ${response.status} ${response.statusText}`);
@@ -338,13 +327,6 @@ router.get('/jobs/external', async (req, res) => {
 
 // Helper function to fetch jobs from external API
 async function fetchExternalJobs(searchQuery, location, limit = 10, page = 1) {
-  const apiKey = process.env.GOOGLE_CLOUD_SEARCH_API;
-  const engineId = process.env.GOOGLE_SEARCH_ENGINE_API;
-
-  if (!apiKey || !engineId) {
-    throw new Error('Google API credentials not configured');
-  }
-
   // Build search term
   let searchTerm = searchQuery || 'jobs';
   if (location && location.trim()) {
@@ -353,11 +335,11 @@ async function fetchExternalJobs(searchQuery, location, limit = 10, page = 1) {
   searchTerm += ' jobs';
 
   const startIndex = ((parseInt(page) || 1) - 1) * parseInt(limit) + 1;
-  const query = encodeURIComponent(searchTerm);
-  const url = `https://www.googleapis.com/customsearch/v1?key=${apiKey}&cx=${engineId}&q=${query}&start=${startIndex}&num=${limit}`;
+  
+  // Use internal proxy instead of direct Google API call
+  const proxyUrl = `http://localhost:${process.env.PORT || 3000}/api/google-search?q=${encodeURIComponent(searchTerm)}&start=${startIndex}&num=${limit}`;
 
-
-  const response = await fetch(url);
+  const response = await fetch(proxyUrl);
 
   if (!response.ok) {
     // If rate limited, try mock data as last resort
