@@ -26,8 +26,12 @@ document.getElementById('contact-form').addEventListener('submit', async functio
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'X-CSRF-Token': window.csrfToken, // Add this header
       },
-      body: JSON.stringify(formObject),
+      body: JSON.stringify({
+        ...formObject,
+        _csrf: window.csrfToken,
+      }),
     });
 
     // Check if response is ok (status 200-299)

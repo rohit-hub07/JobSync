@@ -21,8 +21,11 @@ const jobRouter = require('./routes/jobAPI.routes.js');
 const searchRouter = require('./routes/searchAPI.routes.js');
 const passport = require('passport');
 require('./utils/passport.js');
-const { csrfProtection, exposeCsrfToken, csrfErrorHandler } = require('./middleware/csrf.middleware.js');
-
+const {
+  csrfProtection,
+  exposeCsrfToken,
+  csrfErrorHandler,
+} = require('./middleware/csrf.middleware.js');
 
 const app = express();
 const PORT = process.env.PORT || 10000;
@@ -158,6 +161,9 @@ app.use(exposeCsrfToken);
 
 // ========== ROUTES ==========
 
+//csrf error handler
+app.use(csrfErrorHandler);
+
 // Homepage
 app.get('/', optionalAuth, (req, res) => {
   res.render('index.ejs');
@@ -244,7 +250,7 @@ const transporter = nodemailer.createTransport({
 
 // Contact form submission
 
-app.post('/send-email', emailRateLimit,csrfProtection, async (req, res) => {
+app.post('/send-email', emailRateLimit, async (req, res) => {
   console.log('📩 Incoming form submission:', req.body);
 
   const { user_name, user_role, user_email, portfolio_link, message } = req.body;
@@ -316,9 +322,6 @@ app.listen(PORT, async () => {
     console.error('Failed to start Job Fetcher Service:', error);
   }
 });
-
-//csrf error handler
-app.use(csrfErrorHandler);
 
 // 404 handler - keep this as the last middleware
 app.use((req, res, next) => {
