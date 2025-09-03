@@ -9,10 +9,52 @@ const jobFetcher = require('../services/jobFetcher.js');
 
 dotenv.config(); //env
 
+const googleAuthController = async (req, res) => {
+  try {
+    const user = req.user;
+
+    const tkn = jwt.sign(
+      { id: user._id, name: user.name, email: user.email },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: '24h',
+      }
+    );
+
+    res.cookie('token', tkn, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
+      maxAge: 24 * 60 * 60 * 1000,
+    });
+
+    req.flash('success', `Welcome back, ${user.name}!`);
+    res.redirect('/');
+  } catch (error) {
+    console.error('Google Auth Callback Error:', error);
+    req.flash('error', 'Authentication failed. Please try again.');
+    return res.redirect('/login');
+  }
+    
+  }
+
 const registerUserController = async (req, res) => {
-  const { name, email, password, role } = req.body;
+  const { name, email, password, role } = req.body;  
+  // Check if this is an AJAX request
+  const isAjax = req.xhr || 
+                 (req.headers.accept && req.headers.accept.indexOf('json') > -1) ||
+                 (req.headers['content-type'] && req.headers['content-type'].indexOf('json') > -1) ||
+                 req.headers['x-requested-with'] === 'XMLHttpRequest';
+  
   try {
     if (!name || !email || !password) {
+      if (isAjax) {
+        return res.status(400).json({
+          success: false,
+          message: 'All fields are required!',
+          error: 'MISSING_FIELDS'
+        });
+      }
       req.flash('error', 'All fields are required!');
       return res.redirect('/signup');
     }
@@ -20,6 +62,13 @@ const registerUserController = async (req, res) => {
     // Check if the user already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
+      if (isAjax) {
+        return res.status(400).json({
+          success: false,
+          message: 'User already exists',
+          error: 'USER_EXISTS'
+        });
+      }
       req.flash('error', 'User already exists');
       return res.redirect('/signup');
     }
@@ -69,10 +118,28 @@ const registerUserController = async (req, res) => {
     };
 
     await transporter.sendMail(mailOptions);
+    
+    if (isAjax) {
+      return res.status(201).json({
+        success: true,
+        message: 'Account created successfully! Please check your email for verification.',
+        userId: newUser._id
+      });
+    }
+    
     req.flash('success', 'Account created successfully! Please check your email for verification.');
     res.redirect('/login');
   } catch (error) {
     console.log('Error registering the user: ', error);
+    
+    if (isAjax) {
+      return res.status(500).json({
+        success: false,
+        message: 'Something went wrong! Please try again.',
+        error: 'REGISTRATION_FAILED'
+      });
+    }
+    
     req.flash('error', 'Something went wrong! Please try again.');
     return res.redirect('/signup');
   }
@@ -106,8 +173,8 @@ const verificationController = async (req, res) => {
 
     res.cookie('token', tkn, {
       httpOnly: true,
-      secure: true,
-      sameSite: 'None',
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
       maxAge: 24 * 60 * 60 * 1000,
     });
 
@@ -122,26 +189,74 @@ const verificationController = async (req, res) => {
 
 const loginController = async (req, res) => {
   const { email, password } = req.body;
+  
+  // Check if this is an AJAX request
+  const isAjax = req.xhr || 
+                 (req.headers.accept && req.headers.accept.indexOf('json') > -1) ||
+                 (req.headers['content-type'] && req.headers['content-type'].indexOf('json') > -1) ||
+                 req.headers['x-requested-with'] === 'XMLHttpRequest';
+  
   try {
     if (!email || !password) {
+      if (isAjax) {
+        return res.status(400).json({
+          success: false,
+          message: 'All fields are required!',
+          error: 'MISSING_FIELDS'
+        });
+      }
       req.flash('error', 'All fields are required!');
       return res.redirect('/login');
     }
 
     const user = await User.findOne({ email });
     if (!user) {
+      if (isAjax) {
+        return res.status(400).json({
+          success: false,
+          message: 'No account found with the provided email!',
+          error: 'USER_NOT_FOUND'
+        });
+      }
       req.flash('error', 'No account found with the provided email!');
       return res.redirect('/login');
     }
 
+    // Check if user has a password (could be null for OAuth users)
+    if (!user.password) {
+      if (isAjax) {
+        return res.status(400).json({
+          success: false,
+          message: 'This account does not have a password set. Try logging in with Google.',
+          error: 'NO_PASSWORD_SET'
+        });
+      }
+      req.flash('error', 'This account does not have a password set. Try logging in with Google.');
+      return res.redirect('/login');
+    }
+    
     const isMatched = await bcrypt.compare(password, user.password);
     console.log('ismatched value: ', isMatched);
     if (!isMatched) {
+      if (isAjax) {
+        return res.status(400).json({
+          success: false,
+          message: 'Email or password is incorrect!',
+          error: 'INVALID_CREDENTIALS'
+        });
+      }
       req.flash('error', 'Email or password is incorrect!');
       return res.redirect('/login');
     }
 
     if (!user.isVerified) {
+      if (isAjax) {
+        return res.status(400).json({
+          success: false,
+          message: 'Please verify your email before logging in!',
+          error: 'EMAIL_NOT_VERIFIED'
+        });
+      }
       req.flash('warning', 'Please verify your email before logging in!');
       return res.redirect('/login');
     }
@@ -156,15 +271,37 @@ const loginController = async (req, res) => {
 
     res.cookie('token', tkn, {
       httpOnly: true,
-      secure: true,
-      sameSite: 'None',
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
       maxAge: 24 * 60 * 60 * 1000,
     });
+
+    if (isAjax) {
+      return res.status(200).json({
+        success: true,
+        message: `Welcome back, ${user.name}!`,
+        user: {
+          id: user._id,
+          name: user.name,
+          email: user.email,
+          isVerified: user.isVerified
+        }
+      });
+    }
 
     req.flash('success', `Welcome back, ${user.name}!`);
     res.redirect('/');
   } catch (error) {
     console.log('Error logging the user: ', error);
+    
+    if (isAjax) {
+      return res.status(500).json({
+        success: false,
+        message: 'Something went wrong during login!',
+        error: 'LOGIN_FAILED'
+      });
+    }
+    
     req.flash('error', 'Something went wrong during login!');
     return res.redirect('/login');
   }
@@ -174,9 +311,9 @@ const logoutController = async (req, res) => {
   try {
     res.cookie('token', '', {
       httpOnly: true,
-      secure: true,
-      sameSite: 'None',
-      maxAge: 0, // expire cookie
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
+      maxAge: 0,
     });
 
     req.flash('info', 'You have been logged out successfully.');
@@ -435,6 +572,7 @@ async function getJobStats() {
 }
 
 module.exports = {
+  googleAuthController,
   registerUserController,
   verificationController,
   loginController,
