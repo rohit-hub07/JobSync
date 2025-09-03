@@ -52,16 +52,13 @@ main();
 
 // === CORS SETUP ===
 const allowedOrigins = [
-<<<<<<< HEAD
   'https://jobsync-new.onrender.com',
   'https://jobsyncc.netlify.app',
   'http://localhost:3000',
   'https://jobsync-zazt.onrender.com',
-=======
   "https://jobsync-new.onrender.com",
   "https://jobsyncc.netlify.app",
   "http://localhost:5000",
->>>>>>> origin/main
 ];
 
 // ========== MIDDLEWARE ==========
@@ -324,6 +321,10 @@ const chatLimiter = rateLimit({
 app.get("/", optionalAuth, (req, res) => {
   res.render("index.ejs");
 });
+
+app.get("/demo", (req, res) => {
+  res.send("Working!")
+})
 
 // app.get("/chatbot", (req, res) => {
 //   res.render("chatbot.ejs");
