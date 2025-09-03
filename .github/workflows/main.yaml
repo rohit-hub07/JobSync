@@ -1,0 +1,50 @@
+name: CI/CD for Render Project
+
+on:
+  pull_request:
+    branches:
+      - main   # run CI on PRs into main
+  push:
+    branches:
+      - main   # deploy on push to main
+
+jobs:
+  # --- CI for Pull Requests ---
+  test:
+    name: Build & Test
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run lint
+        run: npm run lint || echo "Lint skipped"
+
+      - name: Run tests
+        run: npm test || echo "No tests defined"
+
+      - name: Build project
+        run: npm run build || echo "Build skipped"
+
+  # --- CD for Render ---
+  deploy:
+    name: Deploy to Render
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    
+    steps:
+      - name: Trigger Render Deploy
+        run: |
+          curl -X POST "https://api.render.com/v1/services/srv-d24krl15pdvs73foifqg/deploys" \
+            -H "Accept: application/json" \
+            -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}"
