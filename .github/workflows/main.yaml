@@ -3,10 +3,10 @@ name: CI/CD for Render Project
 on:
   pull_request:
     branches:
-      - main   # run CI on PRs into main
+      - '*'   # run CI on PRs into main
   push:
     branches:
-      - main   # deploy on push to main
+      - render/deploy-testing   # deploy on push to main
 
 jobs:
   # --- CI for Pull Requests ---
