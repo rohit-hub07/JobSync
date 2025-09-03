@@ -197,7 +197,7 @@ app.get("/csrf-token", (req, res) => {
       cookieSet: true,
     });
   } catch (error) {
-    console.error("❌ Error generating CSRF token:", error);
+    console.error(" Error generating CSRF token:", error);
     res.status(500).json({
       error: "Failed to generate CSRF token",
       message: error.message,
